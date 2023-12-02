@@ -10,16 +10,17 @@
 
 module Main exposing (main)
 
-
 import Browser
+import Char exposing (isDigit)
 import Html exposing (Html, a, button, div, form, h2, i, input, label, text, textarea)
 import Html.Attributes exposing (action, class, for, placeholder, required, rows, style, type_)
 import Html.Events exposing (onClick, onInput)
-import List exposing (map, sum, head)
+import List exposing (head, map, sum)
 import Maybe exposing (Maybe, withDefault)
-import String exposing (lines, toInt, uncons, reverse, fromList, startsWith, dropLeft)
-import Char exposing (isDigit)
-import Regex 
+import Regex
+import String exposing (dropLeft, fromList, lines, reverse, startsWith, toInt, uncons)
+
+
 
 -- input is the input from
 -- from https://adventofcode.com/2023/day/1/input
@@ -53,6 +54,7 @@ part1 input =
         |> map calibrationValue
         |> sum
 
+
 part2 : String -> Int
 part2 input =
     input
@@ -63,59 +65,115 @@ part2 input =
 
 calibrationValue : String -> Int
 calibrationValue string =
-    let firstDigit digits =
+    let
+        firstDigit digits =
             case uncons digits of
-                Just(x, rest) ->
+                Just ( x, rest ) ->
                     case isDigit x of
-                        False -> firstDigit rest
-                        True -> x
-                Nothing -> '0'
+                        False ->
+                            firstDigit rest
+
+                        True ->
+                            x
+
+                Nothing ->
+                    '0'
     in
-        case toInt <| fromList [firstDigit string, firstDigit <| reverse string] of
-            Just (i) -> i
-            Nothing -> 0
+    case toInt <| fromList [ firstDigit string, firstDigit <| reverse string ] of
+        Just i ->
+            i
+
+        Nothing ->
+            0
+
 
 calibrationValue2 : String -> Int
 calibrationValue2 string =
     let
-        last = case head (Regex.find lastDigitRegex string) of
-            Nothing -> "0"
-            Just s -> case head s.submatches of
-                Nothing -> "0"
-                Just match -> Maybe.withDefault "0" match
-    in
-        10 * tokenToInt ( Maybe.withDefault "0" (head (map .match(Regex.find firstDigitRegex string)))) +
-        tokenToInt ( last )
+        last =
+            case head (Regex.find lastDigitRegex string) of
+                Nothing ->
+                    "0"
 
+                Just s ->
+                    case head s.submatches of
+                        Nothing ->
+                            "0"
+
+                        Just match ->
+                            Maybe.withDefault "0" match
+    in
+    10
+        * tokenToInt (Maybe.withDefault "0" (head (map .match (Regex.find firstDigitRegex string))))
+        + tokenToInt last
 
 
 tokenToInt : String -> Int
 tokenToInt s =
     case s of
-        "1" -> 1
-        "one" -> 1
-        "2" -> 2
-        "two" -> 2
-        "3" -> 3
-        "three" -> 3
-        "4" -> 4
-        "four" -> 4
-        "5" -> 5
-        "five" -> 5
-        "6" -> 6
-        "six" -> 6
-        "7" -> 7
-        "seven" -> 7
-        "8" -> 8
-        "eight" -> 8
-        "9" -> 9
-        "nine" -> 9
-        _ -> 0
+        "1" ->
+            1
+
+        "one" ->
+            1
+
+        "2" ->
+            2
+
+        "two" ->
+            2
+
+        "3" ->
+            3
+
+        "three" ->
+            3
+
+        "4" ->
+            4
+
+        "four" ->
+            4
+
+        "5" ->
+            5
+
+        "five" ->
+            5
+
+        "6" ->
+            6
+
+        "six" ->
+            6
+
+        "7" ->
+            7
+
+        "seven" ->
+            7
+
+        "8" ->
+            8
+
+        "eight" ->
+            8
+
+        "9" ->
+            9
+
+        "nine" ->
+            9
+
+        _ ->
+            0
+
 
 firstDigitRegex : Regex.Regex
 firstDigitRegex =
     Maybe.withDefault Regex.never <|
         Regex.fromString "(\\d|one|two|three|four|five|six|seven|eight|nine)"
+
 
 lastDigitRegex : Regex.Regex
 lastDigitRegex =
@@ -170,15 +228,14 @@ view model =
                         [ text model.input ]
                     ]
                 , div [ class "flex space-x-8 justify-center" ]
-                     [ div [ class "textarea_label" ] [ text "Part1: " ]
-                     , text <| String.fromInt model.part1Value
-                     , div [ class "textarea_label" ] [ text "Part2: " ]
-                     , text <| String.fromInt model.part2Value
+                    [ div [ class "textarea_label" ] [ text "Part1: " ]
+                    , text <| String.fromInt model.part1Value
+                    , div [ class "textarea_label" ] [ text "Part2: " ]
+                    , text <| String.fromInt model.part2Value
                     ]
                 ]
             ]
         ]
-        
 
 
 main : Program () Model Msg
